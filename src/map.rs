@@ -18,6 +18,7 @@ pub fn map_idx(x: i32, y: i32) -> usize {
     (y*SCREEN_WIDTH + x) as usize
 }
 
+
 impl Map {
     // 创建地图
     pub fn new() -> Self {
@@ -33,13 +34,32 @@ impl Map {
                 let idx = map_idx(x, y);
                 match self.tiles[idx] {
                     TileType::Floor => {
-                        ctx.set(x, y, WHEAT, BLACK, to_cp437('.'));
+                        ctx.set(x, y, BLUE, BLACK, to_cp437('#'));
                     },
                     TileType::Wall => {
-                        ctx.set(x, y, GREEN, BLACK, to_cp437('#'));
+                        ctx.set(x, y, GREEN, BLACK, to_cp437('^'));
                     },
                 }
             }
+        }
+    }
+
+    // 判断玩家是否在地图内
+    pub fn in_bounds(&self, point: Point) -> bool {
+        point.x >= 0 && point.x < SCREEN_WIDTH && point.y >= 0 && point.y < SCREEN_HEIGHT
+    }
+
+    // 判断地图是否可以进入
+    pub fn can_enter_tile(&self, point: Point) -> bool {
+        self.in_bounds(point) && self.tiles[map_idx(point.x, point.y)] == TileType::Floor
+    }
+
+    // 返回一个点对应的地图索引
+    pub fn try_idx(&self, point: Point) -> Option<usize> {
+        if !self.in_bounds(point) {
+            None
+        } else {
+            Some(map_idx(point.x, point.y))
         }
     }
 }
