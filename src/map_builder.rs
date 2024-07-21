@@ -1,3 +1,4 @@
+// 构建地图，生成具有随机房间的地图
 use crate::prelude::*;
 const NUM_ROOMS: usize = 20;
 

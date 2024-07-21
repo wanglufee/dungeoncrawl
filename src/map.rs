@@ -1,3 +1,4 @@
+// 地图模块，地图，以及地图相关的api
 use crate::prelude::*;
 const NUM_TILES: usize = (SCREEN_HEIGHT * SCREEN_WIDTH) as usize;
 
@@ -27,35 +28,6 @@ impl Map {
         }
     }
 
-    // 渲染地图
-    pub fn render(&self, ctx: &mut BTerm, camera: &Camera) {
-        ctx.set_active_console(0);
-        for y in camera.top_y..camera.bottom_y {
-            for x in camera.left_x..camera.right_x {
-                if self.in_bounds(Point::new(x, y)) {
-                    let idx = map_idx(x, y);
-                    match self.tiles[idx] {
-                        TileType::Floor => {
-                            ctx.set(
-                                x-camera.left_x, 
-                                y-camera.top_y, 
-                                WHITE, 
-                                BLACK, 
-                                to_cp437('.'));
-                        },
-                        TileType::Wall => {
-                            ctx.set(
-                                x-camera.left_x, 
-                                y-camera.top_y, 
-                                WHITE, 
-                                BLACK, 
-                                to_cp437('#'));
-                        },
-                    }
-                }
-            }
-        }
-    }
 
     // 判断是否在地图内
     pub fn in_bounds(&self, point: Point) -> bool {

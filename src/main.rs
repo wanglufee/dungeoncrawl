@@ -1,38 +1,52 @@
-pub mod map;
-pub mod map_builder;
-pub mod player;
-pub mod camera;
+mod map;
+mod map_builder;
+mod camera;
+mod components;
+mod spawner;
+mod system;
 
 // 顶层模块，全局可见
 mod prelude {
     pub use bracket_lib::prelude::*;
+    pub use legion::*;
+    pub use legion::world::SubWorld;
+    pub use legion::systems::CommandBuffer;
     pub const SCREEN_WIDTH: i32 = 80;
     pub const SCREEN_HEIGHT: i32 = 50;
     pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH/2;
     pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT/2;
     pub use crate::map::*;
-    pub use crate::player::*;
     pub use crate::map_builder::*;
     pub use crate::camera::*;
+    pub use crate::components::*;
+    pub use crate::spawner::*;
+    pub use crate::system::*;
 }
 
 use map::Map;
 use prelude::*;
 
 struct State {
-    map: Map,
-    player: Player,
-    camera: Camera,
+    ecs: World,
+    resources: Resources,
+    systems: Schedule,
 }
 
 impl State {
     fn new() -> Self {
+        // 
+        let mut ecs = World::default();
+        // 资源，地图等属于资源，摄像机也属于资源
+        let mut resources = Resources::default();
         let mut rng = RandomNumberGenerator::new();
         let map_builder = MapBuilder::new(&mut rng);
+        spawn_player(&mut ecs, map_builder.player_start);   // 通过组件构建玩家，并添加到世界
+        resources.insert(map_builder.map);
+        resources.insert(Camera::new(map_builder.player_start));
         Self{
-            map: map_builder.map,
-            player: Player::new(map_builder.player_start),
-            camera: Camera::new(map_builder.player_start),
+            ecs,
+            resources,
+            systems: build_scheduler(),
         }
     }
 }
@@ -43,9 +57,11 @@ impl GameState for State {
         ctx.cls();
         ctx.set_active_console(1);
         ctx.cls();
-        self.player.update(ctx, &self.map,&mut self.camera);     // 获取玩家位置
-        self.map.render(ctx,&self.camera);       // 渲染地图
-        self.player.render(ctx,&self.camera);        // 渲染玩家
+        // TODO: Execute Systems
+        self.resources.insert(ctx.key);   // 将键盘输入插入资源列表
+        self.systems.execute(&mut self.ecs, &mut self.resources);
+        render_draw_buffer(ctx).expect("Render error");
+        // TODO: Render Draw Buffer
     }
 }
 

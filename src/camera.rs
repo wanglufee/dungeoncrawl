@@ -1,3 +1,4 @@
+// 摄像机，通过摄像机来展示游戏界面，以玩家为中心。
 use bracket_lib::terminal::Point;
 
 use crate::prelude::*;
