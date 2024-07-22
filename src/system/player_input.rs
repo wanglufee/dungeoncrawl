@@ -2,8 +2,8 @@
 use crate::prelude::*;
 
 #[system]
-#[write_component(Point)]
-#[read_component(Player)]
+#[write_component(Point)]   // 为一个组件申请写权限
+#[read_component(Player)]   // 为一个组件申请读权限
 pub fn player_input(
     ecs: &mut SubWorld,
     #[resource] map: &Map,

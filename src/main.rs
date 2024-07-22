@@ -60,7 +60,7 @@ impl GameState for State {
         // TODO: Execute Systems
         self.resources.insert(ctx.key);   // 将键盘输入插入资源列表
         self.systems.execute(&mut self.ecs, &mut self.resources);
-        render_draw_buffer(ctx).expect("Render error");
+        render_draw_buffer(ctx).expect("Render error");    // 批量绘制，执行被添加到buffer中的绘制命令。
         // TODO: Render Draw Buffer
     }
 }
